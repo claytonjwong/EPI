@@ -138,18 +138,29 @@ public:
      created from scratch are allowed.  These constraints imply, for example,
      that increment or decrement, or test if x<y can NOT be used.
      ---------------------------------------------------------------------*/
+    unsigned int Shift(unsigned int num, int bitval){
+        while (bitval > 1){
+            num <<= 1;
+            bitval >>= 1;
+        }
+        return num;
+    }
+    
     unsigned int Add(unsigned int x, unsigned int y){
-        unsigned int res=0, pos=0;
+        unsigned int res=0; int pos=1;
         bool carry=false;
         while (x || y){
             bool curr = (x&1) ^ (y&1);
             if (carry) { curr = !curr; }
             carry = ((x&1 && y&1) || ( (x&1 || y&1) & carry ));
             x >>= 1; y >>= 1;
-            res |= curr << pos++;
+            if (curr){ // shift curr into position, then add curr onto return result
+                res |= Shift((unsigned int)curr, pos);
+            }
+            pos <<= 1;
         }
         if (carry) {
-            res |= 1<<pos;
+            res |= Shift(1U, pos);
         }
         return res;
     }
@@ -275,12 +286,12 @@ int main(int argc, const char * argv[]) {
     
     
     while (true){
-        int x,y,n;
-        cout << "x y n: ";
-        cin >> x >> y >> n;
-        solution.SwapRightMostNBits(x, y, n);
-        cout << "swapped bits: " << x << " " << y << endl;
-
+        int x,y;
+        cout << "x y: ";
+        cin >> x >> y;
+        cout << x << "+" << y << "=" << solution.Add(x, y) << endl;
+        cout << x << "*" << y << "=" << solution.Multiply(x, y) << endl;
+        cout << x << "/" << y << "=" << solution.Divide2(x, y) << endl;
     }
     
     
