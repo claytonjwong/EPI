@@ -91,6 +91,8 @@ public:
     }
     
     void SwapRightMostNBits(int& x, int& y, int n){
+        if (&x==&y){return;}
+        if (n>31) {n=31;}
         int mask=(1<<n)-1;
         x^=y&mask;
         y^=x&mask;
@@ -138,6 +140,8 @@ public:
      created from scratch are allowed.  These constraints imply, for example,
      that increment or decrement, or test if x<y can NOT be used.
      ---------------------------------------------------------------------*/
+    
+    /* Shift is a helper method for Multiply */
     unsigned int Shift(unsigned int num, int bitval){
         while (bitval > 1){
             num <<= 1;
@@ -146,6 +150,7 @@ public:
         return num;
     }
     
+    /* Add is a helper method for Multiply */
     unsigned int Add(unsigned int x, unsigned int y){
         unsigned int res=0; int pos=1;
         bool carry=false;
@@ -154,7 +159,7 @@ public:
             if (carry) { curr = !curr; }
             carry = ((x&1 && y&1) || ( (x&1 || y&1) & carry ));
             x >>= 1; y >>= 1;
-            if (curr){ // shift curr into position, then add curr onto return result
+            if (curr){
                 res |= Shift((unsigned int)curr, pos);
             }
             pos <<= 1;
@@ -216,7 +221,7 @@ public:
     /*----------------------------------------------------------------------
      4.7 Power
      ---------------------------------------------------------------------*/
-    double Power(double x, int y){
+    double Power1(double x, int y){
         if (y==0){ return 1.0; }
         double res=x;
         int exp=abs(y);
@@ -227,6 +232,16 @@ public:
         return res;
     }
     
+    double Power2(double x, int exp){
+        int res=1.0;
+        while(exp){
+            if (exp & 1){
+                res *= x;
+            }
+            x *= x; exp >>= 1;
+        }
+        return res;
+    }
     
     /*----------------------------------------------------------------------
      4.8 Reverse Int (decimal)
@@ -292,6 +307,8 @@ int main(int argc, const char * argv[]) {
         cout << x << "+" << y << "=" << solution.Add(x, y) << endl;
         cout << x << "*" << y << "=" << solution.Multiply(x, y) << endl;
         cout << x << "/" << y << "=" << solution.Divide2(x, y) << endl;
+        cout << x << "^" << y << "=" << (int)solution.Power1(x, y) << endl;
+        cout << x << "^" << y << "=" << (int)solution.Power2(x, y) << endl;
     }
     
     
